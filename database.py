@@ -56,3 +56,16 @@ def view_movieinfo(filme):
     for x in movies:
         print(x)
     results = c.fetchall()
+    conn.commit()
+    conn.close()
+
+def view_saldo(email):
+    conn = psycopg2.connect("host=localhost dbname=projeto user=postgres password=postgres")
+    c = conn.cursor()
+    c.execute("SELECT * FROM users WHERE email = '" + email + "'")
+    results = c.fetchall()
+    for x in results:
+        print(x[3])
+
+    conn.commit()
+    conn.close()
