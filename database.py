@@ -66,6 +66,27 @@ def view_saldo(email):
     results = c.fetchall()
     for x in results:
         print(x[3])
+    return(x[3])
+    conn.commit()
+    conn.close()
+
+def view_custo(filme):
+    conn = psycopg2.connect("host=localhost dbname=projeto user=postgres password=postgres")
+    c = conn.cursor()
+    c.execute("SELECT * FROM movies WHERE name = '" + filme + "'")
+    results = c.fetchall()
+    for x in results:
+        print(x[6])
+    return(x[6])
+    conn.commit()
+    conn.close()
+
+def compra_filme(custo,saldo,email):
+    conn = psycopg2.connect("host=localhost dbname=projeto user=postgres password=postgres")
+    c = conn.cursor()
+    saldofinal= saldo-custo
+    c.execute("UPDATE users  SET balance=(%s) WHERE email='"+email+"'",(saldofinal,))
+
 
     conn.commit()
     conn.close()
