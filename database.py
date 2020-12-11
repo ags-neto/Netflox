@@ -171,9 +171,13 @@ def remove_article(n_id):
         for i in n_id:
             itemid = i[0]
 
-    # TODO if client has movie dont remove
-    c.execute("DELETE FROM movies WHERE itemid = '" + str(itemid) + "'")
-    print("\n\tMovie removed successfully")
+    c.execute("SELECT * FROM rent WHERE movieid = '" + str(itemid) + "' AND timeavaible > 0")
+    result = c.fetchall()
+    if result:
+        print("\n\tCan't remove article because there are user(s) renting it")
+    else:
+        c.execute("DELETE FROM movies WHERE itemid = '" + str(itemid) + "'")
+        print("\n\tArticle removed successfully")
 
     conn.commit()
     conn.close()
