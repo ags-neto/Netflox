@@ -346,26 +346,26 @@ def view_available_movies(userid):
     c = conn.cursor()
     c.execute("SELECT * FROM rent WHERE dateend >= CURRENT_TIMESTAMP AND clientid='" + str(userid) + "'")
     results = c.fetchall()
-    print("------------")
-    print("movies available:")
+    print("\n\t------------")
+    print("\tMovies available:")
     for x in results:
         c.execute("SELECT * FROM movies WHERE itemid =  " + str(x[8]))
         movies = c.fetchall()
         for y in movies:
-            print(y[1])
+            print("\t"+y[1])
 
-    print("------------")
-    print("movies not available any more:")
+    print("\t------------")
+    print("\tMovies not available any more:")
     c.execute("SELECT * FROM rent WHERE CURRENT_TIMESTAMP > dateend  AND clientid='" + str(userid) + "'")
     results2 = c.fetchall()
-    id = 0
+
     for z in results2:
-        id2 = z[8]
+        z[8]
         c.execute("SELECT * FROM movies WHERE itemid =  " + str(z[8]))
         movies2 = c.fetchall()
         for r in movies2:
-            print(r[1])
-    print("------------")
+            print("\t"+r[1])
+    print("\t------------")
 
 
 def findby_name(name):
@@ -380,7 +380,7 @@ def findby_name(name):
         for i in movies:
             break
     else:
-        print("\n---movie name not correct---\n")
+        print("\n\t---movie name not correct---")
         return 0
     print("\n")
     conn.commit()
@@ -393,13 +393,13 @@ def findby_director(director):
     c.execute("SELECT * FROM movies WHERE director like '%" + director + "%'")
     movies = c.fetchall()
     for x in movies:
-        print(x[3] + "----" + x[1])
+        print("\t"+x[3] + "----" + x[1])
 
     if movies:
         for i in movies:
             break
     else:
-        print("\n---movie director name not correct---\n")
+        print("\t\n---movie director name not correct---")
         return 0
     print("\n")
     conn.commit()
@@ -412,14 +412,16 @@ def findby_type(type):
     c.execute("SELECT * FROM movies WHERE type like '%" + type + "%'")
     movies = c.fetchall()
     for x in movies:
-        print(x[9] + "----" + x[1])
+        print("\t"+x[9] + "----" + x[1])
 
     if movies:
         for i in movies:
             break
     else:
-        print("\n---movie type not correct---\n")
-        return (0)
+        print("\n\t---movie type not correct---")
+        conn.commit()
+        conn.close()
+        return 0
     print("\n")
     conn.commit()
     conn.close()
@@ -440,7 +442,7 @@ def findby_actor(actor):
         c.execute("SELECT * FROM movies WHERE itemid=('" + str(id[y]) + "')")
         movies = c.fetchall()
         for z in movies:
-            print(x[1], "----", z[1])
+            print("\t"+x[1], "----", z[1])
     conn.commit()
     conn.close()
 
@@ -451,7 +453,7 @@ def view_allmovies_ordertitle():
     c.execute("SELECT * FROM movies ORDER BY name;")
     movies = c.fetchall()
     for x in movies:
-        print(x[1])
+        print("\t"+x[1])
     conn.commit()
     conn.close()
 
@@ -462,7 +464,7 @@ def view_allmovies_orderdirector():
     c.execute("SELECT * FROM movies ORDER BY director;")
     movies = c.fetchall()
     for x in movies:
-        print(x[3] + "---" + x[1])
+        print("\t"+x[3] + "---" + x[1])
     conn.commit()
     conn.close()
 
@@ -473,7 +475,7 @@ def view_allmovies_orderdate():
     c.execute("SELECT * FROM movies ORDER BY year;")
     movies = c.fetchall()
     for x in movies:
-        print(str(x[7]) + "------" + x[1])
+        print("\t"+str(x[7]) + "------" + x[1])
     conn.commit()
     conn.close()
 
@@ -484,7 +486,7 @@ def view_allmovies_orderimdb():
     c.execute("SELECT * FROM movies ORDER BY imdbrating;")
     movies = c.fetchall()
     for x in movies:
-        print(str(x[4]) + "-----" + x[1])
+        print("\t"+str(x[4]) + "-----" + x[1])
     conn.commit()
     conn.close()
 
@@ -497,8 +499,8 @@ def view_availablemovies_orderdirector(userid):
     c = conn.cursor()
     c.execute("SELECT * FROM rent WHERE dateend >= CURRENT_TIMESTAMP AND clientid='" + str(userid) + "'")
     results = c.fetchall()
-    print("------------")
-    print("movies available:")
+    print("\t------------")
+    print("\tMovies available:")
     movies = 0
     for x in results:
         id = x[8]  # id's que queremos ir buscar
@@ -506,10 +508,10 @@ def view_availablemovies_orderdirector(userid):
         c.execute("SELECT * FROM movies WHERE itemid = '" + str(id) + "' ORDER BY director")
         movies += c.fetchall()
     for y in movies:
-        print(y[3] + "---" + y[1])
+        print("\t"+y[3] + "---" + y[1])
 
-    print("------------")
-    print("movies not available any more:")
+    print("\t------------")
+    print("\tMovies not available any more:")
     c.execute("SELECT * FROM rent WHERE CURRENT_TIMESTAMP > dateend  AND clientid='" + str(userid) + "'")
     results2 = c.fetchall()
     id = 0
@@ -518,8 +520,8 @@ def view_availablemovies_orderdirector(userid):
         c.execute("SELECT * FROM movies WHERE itemid = " + str(z[8]))
         movies2 = c.fetchall()
         for r in movies2:
-            print(r[1])
-    print("------------")
+            print("\t"+r[1])
+    print("\t------------")
 
 # def view_availablemovies_orderdate(USERID):
 # def view_availablemovies_orderimdb(USERID):
