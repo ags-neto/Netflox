@@ -1,7 +1,6 @@
 import psycopg2
 global USERID
 
-
 # MENU
 def create_user(name, email, password):
     conn = psycopg2.connect("host=localhost dbname=NetfloxFinal user=postgres password=postgres")
@@ -148,6 +147,88 @@ def message_client(msg, recieverid, senderid):
     conn.close()
 
 # SEARCH ARTICLES
+def findby_name(name):
+    conn = psycopg2.connect("host=localhost dbname=NetfloxFinal user=postgres password=postgres")
+    c = conn.cursor()
+    y=0
+    c.execute("SELECT * FROM articles WHERE name like '%" + name + "%'")
+    movies = c.fetchall()
+    for x in movies:
+        y=y+1
+        print("\t"+str(y)+") "+x[1])
+
+    if movies:
+        for i in movies:
+            break
+    else:
+        print("\n---movie name not correct---\n")
+        conn.commit()
+        conn.close()
+        return (0)
+    conn.commit()
+    conn.close()
+    return(movies)
+def findby_director(director):
+    conn = psycopg2.connect("host=localhost dbname=NetfloxFinal user=postgres password=postgres")
+    y = 0
+    c = conn.cursor()
+    c.execute("SELECT * FROM articles WHERE director like '%" + director + "%'")
+    movies = c.fetchall()
+    for x in movies:
+        y = y + 1
+        print("\t" + str(y) + ") " + x[1])
+
+    if movies:
+        for i in movies:
+            break
+    else:
+        print("\n---movie director name not correct---\n")
+        conn.commit()
+        conn.close()
+        return (movies)
+    conn.commit()
+    conn.close()
+def findby_type(type):
+    conn = psycopg2.connect("host=localhost dbname=NetfloxFinal user=postgres password=postgres")
+    y = 0
+    c = conn.cursor()
+    c.execute("SELECT * FROM articles WHERE type like '%" + type + "%'")
+    movies = c.fetchall()
+    for x in movies:
+        y = y + 1
+        print("\t" + str(y) + ") " + x[1])
+
+    if movies:
+        for i in movies:
+            break
+    else:
+        print("\n---movie type not correct---\n")
+        conn.commit()
+        conn.close()
+        return (0)
+    return (movies)
+    conn.commit()
+    conn.close()
+def findby_actor(actor):
+    conn = psycopg2.connect("host=localhost dbname=NetfloxFinal user=postgres password=postgres")
+    j=0
+    c = conn.cursor()
+    c.execute("SELECT * FROM actors WHERE name like('%"+actor+"%')")
+    actors = c.fetchall()
+    print("\r")
+    for x in actors:
+        actorid=x[0]
+        c.execute("SELECT * FROM articles_actors WHERE actors_actorid = '"+str(actorid)+"' ")
+        articles_actors = c.fetchall()
+        for y in articles_actors:
+            j = j + 1
+            c.execute("SELECT * FROM articles WHERE itemid  = '"+str(y[0])+"' ")
+            articles = c.fetchall()
+            print(str("\t"+str(j)+") "+articles[0][1]))
+
+    return (articles)
+    conn.commit()
+    conn.close()
 def list_all():
     conn = psycopg2.connect("host=localhost dbname=NetfloxFinal user=postgres password=postgres")
     c = conn.cursor()
@@ -455,6 +536,7 @@ def remove_article(n_id):
     if result:
         print("\n\tCan't remove article because there are user(s) renting it")
     else:
+        c.execute("DELETE FROM articles_actors WHERE articles_itemid = '" + str(itemid) + "'")
         c.execute("DELETE FROM articles WHERE itemid = '" + str(itemid) + "'")
         print("\n\tArticle removed successfully")
 
@@ -467,6 +549,68 @@ def alter_balance(userid, balance):
     c.execute("UPDATE users SET balance = '" + str(balance) + "' WHERE userid='" + str(userid) + "'")
 
     print("\n\tBalance updated successfully")
+
+    conn.commit()
+    conn.close()
+def statistics():
+    conn = psycopg2.connect("host=localhost dbname=NetfloxFinal user=postgres password=postgres")
+    total=0
+    c = conn.cursor()
+    c.execute("SELECT articles_itemid FROM rents")
+    rents = c.fetchall()
+    for x in rents:
+        c.execute("SELECT * FROM articles WHERE itemid= '"+str(x[0])+"' ")
+        price=c.fetchall()
+        for y in price:
+            total=total+y[6]
+    print("\rTotal spent by all users: "+str(total))
+
+    contadorusers=0
+    c.execute("SELECT * FROM users")
+    users=c.fetchall()
+    for y in users:
+        contadorusers=contadorusers+1
+
+    print("\rTotal number of users:  " + str(contadorusers-1))
+
+    contadorarticles = 0
+    c.execute("SELECT * FROM articles")
+    articles = c.fetchall()
+    for z in articles:
+        contadorarticles = contadorarticles + 1
+    print("\rTotal number of articles:  " + str(contadorarticles))
+
+    contadorarticles = 0
+    total_movies=0
+    c.execute("SELECT * FROM articles where type = 'movie' ")
+    movies = c.fetchall()
+    for a in movies:
+        contadorarticles = contadorarticles + 1
+        total_movies=total_movies+a[6]
+    print("\rTotal number of movies:  " + str(contadorarticles))
+
+    contadorarticles = 0
+    total_series=0
+    c.execute("SELECT * FROM articles where type = 'series' ")
+    series = c.fetchall()
+    for b in series:
+        contadorarticles = contadorarticles + 1
+        total_series=total_series+b[6]
+    print("\rTotal number of series:  " + str(contadorarticles))
+
+    print("\rTotal spent in movies: "+str(total_movies))
+    print("\rTotal spent in series: "+str(total_series))
+
+    total2=0
+    c.execute("SELECT * FROM rents WHERE end_date > CURRENT_DATE ")
+    rents2 = c.fetchall()
+    for e in rents2:
+        c.execute("SELECT * FROM articles WHERE itemid= '"+str(e[3])+"' ")
+        price2=c.fetchall()
+        for d in price2:
+            total2=total2+d[6]
+
+    print("\rTotal spent on movies currently available: "+str(total2))
 
     conn.commit()
     conn.close()
